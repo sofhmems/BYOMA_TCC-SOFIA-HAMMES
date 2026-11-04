@@ -1,0 +1,19 @@
+# Dependencias
+node_modules/
+
+# Variaveis de ambiente e segredos
+.env
+secrets.h
+
+# Backups do FreeCAD
+*.FCBak
+*.fcbak
+*.FCStd1
+
+# Sistema operacional
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Logs
+*.log

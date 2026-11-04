@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados - Sustentabilidade Têxtil</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <img src="img/logo.png" alt="Logo" class="logo-img">
+                <p>Relatório completo de sustentabilidade do tecido</p>
+            </div>
+
+            <div class="user-info">
+                Usuário: <span id="nome-usuario"></span>
+                | <a href="#" id="btn-sair" style="color: #b88a8a; text-decoration: none;">Sair</a>
+            </div>
+
+            <div id="loading-result" class="loading active">
+                <div class="spinner"></div>
+                <p>Processando análise com sensores ESP32...</p>
+            </div>
+
+            <div id="conteudo-resultados" class="hidden">
+                <div class="resultado-header">
+                    <h2 id="result-title">Resultados</h2>
+                    <p class="tipo-tecido" id="result-subtitle"></p>
+                </div>
+
+                <div class="sustentabilidade-gauge">
+                    <div class="gauge-circle" id="gauge">
+                        <span class="percentual" id="percentual-sust">0%</span>
+                        <span class="label">Sustentabilidade</span>
+                    </div>
+                </div>
+
+                <div class="metricas-grid">
+                    <div class="metrica-card">
+                        <div class="valor" id="valor-desgaste">0</div>
+                        <div class="unidade">%</div>
+                        <div class="nome-metrica">Desgaste</div>
+                    </div>
+                    <div class="metrica-card">
+                        <div class="valor" id="valor-particulas">0</div>
+                        <div class="unidade">ppm</div>
+                        <div class="nome-metrica">Partículas Liberadas</div>
+                    </div>
+                    <div class="metrica-card">
+                        <div class="valor" id="valor-anos">0</div>
+                        <div class="unidade">anos</div>
+                        <div class="nome-metrica">Duração Estimada</div>
+                    </div>
+                </div>
+
+                <div class="medicoes-esp32">
+                    <h3>📡 Medições do ESP32</h3>
+                    <div id="lista-medicoes"></div>
+                </div>
+
+                <div class="info-tecido" id="info-tecido">
+                    <h3 id="info-title">Sobre o Tecido</h3>
+                    <p id="info-descricao"></p>
+                    <h4 style="color: #1a3a2a; margin: 10px 0 5px;">Vantagens</h4>
+                    <ul id="info-vantagens"></ul>
+                    <h4 style="color: #b88a8a; margin: 10px 0 5px;">Desvantagens</h4>
+                    <ul id="info-desvantagens"></ul>
+                </div>
+
+                <div class="botoes-acao">
+                    <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">Nova Análise</button>
+                    <button class="btn btn-secondary" onclick="window.location.href='historico.html'">Histórico de Testes</button>
+                    <button class="btn" onclick="window.print()">Imprimir Relatório</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/resultados.js"></script>
+</body>
+</html>
