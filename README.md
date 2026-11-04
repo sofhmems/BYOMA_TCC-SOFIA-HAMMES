@@ -79,8 +79,13 @@ Variáveis de ambiente (opcional, veja `.env.example`):
 
 ## 4. Modelos 3D — `freecad/`
 
-Arquivos `.FCStd` do FreeCAD com as peças e montagens do projeto
-(suportes, guias, caixa guia, encaixes e capas do motor).
+Arquivos `.FCStd` do FreeCAD com as peças do projeto:
+
+- `bastidor para caixa-guia.FCStd` — bastidor de sustentação da caixa-guia
+- `caixa-guia para tecido.FCStd` — caixa-guia por onde passa o tecido
+- `haste guia para estrutura de movimentação vertical.FCStd` — haste de guia da
+  estrutura de movimentação vertical
+- `suporte motor de lixa.FCStd` — suporte do motor de lixa
 
 Para abrir: FreeCAD 0.20 ou superior → `Arquivo > Abrir`.
 
