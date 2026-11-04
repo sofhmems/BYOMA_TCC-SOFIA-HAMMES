@@ -16,7 +16,9 @@ aquisição de dados por ESP32 e modelos 3D desenvolvidos no FreeCAD.
 │   │   └── sistema_mov_vertical/sistema_mov_vertical.ino
 │   ├── 04-integracao-lixa-esteira/
 │   │   └── codigo_integracao_lixa_esteira/codigo_integracao_lixa_esteira.ino
-│   └── 05-testes/
+│   ├── 05-codigo-completo/
+│   │   └── codigo_funcionamento_completo_tcc/codigo_funcionamento_completo_tcc.ino
+│   └── 06-testes/
 │       ├── teste_led/
 │       ├── teste_motor_de_passo/
 │       ├── teste_motor_esteira/
@@ -24,6 +26,8 @@ aquisição de dados por ESP32 e modelos 3D desenvolvidos no FreeCAD.
 │       ├── teste_sensor_luminosidade/
 │       └── teste_sensor_particulas/
 ├── freecad/                      Modelos 3D do projeto (.FCStd)
+├── identidade-visual/            Logotipo e marca
+├── exposições/                   Materiais de apresentação do projeto
 ├── .gitignore
 └── README.md
 ```
@@ -90,7 +94,39 @@ Ciclo automático que desce a lixa, aciona o motor de lixa e sobe a lixa.
 | Tempo de descida/subida | 1500 ms |
 | Tempo de lixa ligada | 1500 ms |
 
-## 5. Testes — `codigos/05-testes/`
+## 5. Código completo — `codigos/05-codigo-completo/`
+
+Firmware principal do projeto: executa a sequência inteira de ensaio em um único
+sketch, com login pelo Monitor Serial.
+
+**Sequência executada**
+
+1. Motor de passo sobe para a posição inicial
+2. Esteira leva o tecido até a câmara escura (LED ligado)
+3. Medição de luminosidade **antes** do desgaste
+4. Esteira posiciona o tecido na câmara de desgaste
+5. Motor de passo desce o conjunto de lixa
+6. Lixa ligada por 1,5 s, com medição de partículas durante o desgaste
+7. Motor de passo sobe
+8. Esteira retorna pela câmara escura (LED ligado)
+9. Medição de luminosidade **depois** do desgaste
+10. Resultados no Monitor Serial (lux antes/depois, diferença e partículas)
+
+| Item | Valor |
+| ---- | ----- |
+| Placa | ESP32 |
+| Motor de passo — STEP / DIR | GPIO `32` / `33` |
+| Relé da lixa | GPIO `25` (ativo em LOW) |
+| Esteira — IN1 / IN2 | GPIO `14` / `26` |
+| LED do sensor de partículas | GPIO `27` |
+| LED da câmara escura | GPIO `18` |
+| Sensor de partículas | ADC1_CH6 (GPIO `34`) |
+| Sensor de luminosidade | TSL2561 (I2C) |
+
+Bibliotecas: `SparkFunTSL2561`, `Wire` e as APIs do ESP-IDF (`driver/adc`,
+`driver/gpio`, `esp_adc_cal`).
+
+## 6. Testes — `codigos/06-testes/`
 
 Sketches de bancada usados para validar cada componente isoladamente.
 
@@ -106,12 +142,7 @@ Sketches de bancada usados para validar cada componente isoladamente.
 Bibliotecas: `SparkFunTSL2561` e `Wire` (sensores de luminosidade); `teste_led`
 usa as APIs nativas do ESP-IDF (`driver/adc`, `driver/gpio`, FreeRTOS).
 
-> Observação: dois sketches têm conteúdo diferente do nome da pasta —
-> `teste_motor_de_passo` contém o código do sensor de luminosidade e
-> `teste_sensor_particulas` contém um teste de relé. Os arquivos foram mantidos
-> como estavam no diretório original.
-
-## 6. Modelos 3D — `freecad/`
+## 7. Modelos 3D — `freecad/`
 
 Arquivos `.FCStd` do FreeCAD com as peças do projeto:
 
@@ -123,7 +154,20 @@ Arquivos `.FCStd` do FreeCAD com as peças do projeto:
 
 Para abrir: FreeCAD 0.20 ou superior → `Arquivo > Abrir`.
 
-## Aviso sobre dados sensíveis
+## 8. Identidade visual — `identidade-visual/`
 
-Nenhuma senha de rede ou de conta real está versionada neste repositório.
-Os valores de exemplo são placeholders e devem ser substituídos localmente.
+Marca do projeto.
+
+| Arquivo | Descrição |
+| ------- | --------- |
+| `byoma-logotipo.png` | Logotipo oficial da BYOMA (1280 × 698 px, PNG) |
+
+## 9. Exposições — `exposições/`
+
+Materiais de apresentação do projeto.
+
+| Arquivo | Descrição |
+| ------- | --------- |
+| `Apresentação Movaci 2026.pdf` | Apresentação do projeto para a Movaci 2026 |
+| `BANNER BYOMA OFICIAL.png` | Banner oficial do estande |
+| `PITCH BYOMA_SOFIA HAMMES E CAMILE RITTER_DLJ.pptx` | Pitch do projeto |
