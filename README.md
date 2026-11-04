@@ -1,4 +1,4 @@
-# Sustentabilidade Têxtil — TCC
+# Sistema Automatizado de Análise Comparativa da Sustentabilidade Têxtil
 
 Sistema automatizado de análise comparativa da sustentabilidade de tecidos, com
 aquisição de dados por ESP32 e modelos 3D desenvolvidos no FreeCAD.
