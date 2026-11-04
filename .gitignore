@@ -1,7 +1,4 @@
-# Dependencias
-node_modules/
-
-# Variaveis de ambiente e segredos
+# Segredos locais (nao versionar)
 .env
 secrets.h
 

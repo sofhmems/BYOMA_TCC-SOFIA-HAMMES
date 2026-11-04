@@ -1,83 +1,117 @@
 # Sustentabilidade Têxtil — TCC
 
 Sistema automatizado de análise comparativa da sustentabilidade de tecidos, com
-aquisição de dados por ESP32, backend em Node.js e interface web.
+aquisição de dados por ESP32 e modelos 3D desenvolvidos no FreeCAD.
 
 ## Estrutura do repositório
 
 ```
 .
 ├── codigos/
-│   ├── 01-sensor-particulas/     Firmware do sensor de partículas (ESP32)
-│   ├── 02-sistema-desgaste/      Firmware do sistema de desgaste (ESP32/ESP8266 + Modbus)
-│   └── 03-sistema-web/           Backend Node.js + interface web
+│   ├── 01-sensor-particulas/
+│   │   └── esp32/esp32.ino
+│   ├── 02-sistema-desgaste/
+│   │   └── sistema_desgaste/sistema_desgaste.ino
+│   ├── 03-movimento-vertical/
+│   │   └── sistema_mov_vertical/sistema_mov_vertical.ino
+│   ├── 04-integracao-lixa-esteira/
+│   │   └── codigo_integracao_lixa_esteira/codigo_integracao_lixa_esteira.ino
+│   └── 05-testes/
+│       ├── teste_led/
+│       ├── teste_motor_de_passo/
+│       ├── teste_motor_esteira/
+│       ├── teste_motor_lixa/
+│       ├── teste_sensor_luminosidade/
+│       └── teste_sensor_particulas/
 ├── freecad/                      Modelos 3D do projeto (.FCStd)
+├── .gitignore
 └── README.md
 ```
 
+Cada sketch fica em uma pasta com o mesmo nome do arquivo `.ino`, como exige a
+Arduino IDE.
+
 ## 1. Sensor de partículas — `codigos/01-sensor-particulas/`
 
-Firmware do ESP32 responsável por medir a quantidade de partículas liberadas pelo
-tecido (sensor óptico GP2Y1010AU0F) e estimar a variação de densidade antes e
-depois do desgaste.
+Firmware do ESP32 que mede a quantidade de partículas liberadas pelo tecido
+(sensor óptico GP2Y1010AU0F) e estima a variação de densidade antes e depois do
+desgaste.
 
-- Placa: ESP32
-- Sensor: GP2Y1010AU0F (saída analógica)
-- Comunicação: HTTP POST em JSON para `/api/esp32/dados`
-- Intervalo de envio: 5 s
+| Item | Valor |
+| ---- | ----- |
+| Placa | ESP32 |
+| Sensor | GP2Y1010AU0F |
+| Pino de leitura | `A0` |
+| Pino do LED do sensor | `5` |
+| Envio | HTTP POST JSON a cada 5 s |
 
-**Antes de gravar:** ajuste `SSID`, `PASSWORD` e `SERVER_URL` no topo do arquivo
-com os dados da sua rede.
+Bibliotecas: `WiFi`, `HTTPClient`, `ArduinoJson`.
+
+**Antes de gravar:** ajuste `SSID`, `PASSWORD` e `SERVER_URL` no topo do arquivo.
 
 ## 2. Sistema de desgaste — `codigos/02-sistema-desgaste/`
 
-Firmware que controla o forno de ensaio e o acesso ao posto de teste via Modbus TCP.
+Controla o forno de ensaio e o acesso ao posto de teste via Modbus TCP.
 
-- Placa: ESP32 / ESP8266
-- Protocolo: Modbus TCP (`ModbusIP_ESP8266`)
-- Entradas: temperatura (ADC), setpoint, código de acesso e ID do usuário
-- Saídas: comando do forno e LED de acesso liberado
+| Item | Valor |
+| ---- | ----- |
+| Placa | ESP32 / ESP8266 |
+| Protocolo | Modbus TCP |
+| Temperatura (ADC) | GPIO `34` |
+| Biblioteca | `modbus-esp8266` |
 
-**Credenciais:** copie `secrets.h.example` para `secrets.h` e preencha com os
-dados da sua rede. O arquivo `secrets.h` é ignorado pelo Git.
+Registros Modbus usados: temperatura, setpoint do forno, estado do forno,
+solicitação de acesso, LED de acesso liberado e código/ID do usuário.
 
-## 3. Sistema web — `codigos/03-sistema-web/`
+**Credenciais:** copie `secrets.h.example` para `secrets.h` na mesma pasta do
+`.ino` e preencha com os dados da sua rede. O `secrets.h` é ignorado pelo Git.
 
-Backend Express + interface web (login, cadastro, dashboard, histórico e resultados).
+## 3. Movimento vertical — `codigos/03-movimento-vertical/`
 
-```bash
-cd codigos/03-sistema-web
-npm install
-npm start
-```
+Sketch da estrutura de movimentação vertical.
 
-Acesse `http://localhost:3000`.
+| Item | Valor |
+| ---- | ----- |
+| Placa | ESP32 |
+| LED de sinalização | GPIO `18` |
 
-Variáveis de ambiente (opcional, veja `.env.example`):
+> Estado atual: o sketch apenas pisca o LED a cada 1 s (esqueleto para o
+> acionamento do motor).
 
-| Variável         | Descrição                                  |
-| ---------------- | ------------------------------------------ |
-| `PORT`           | Porta do servidor (padrão `3000`)          |
-| `SESSION_SECRET` | Chave de assinatura do cookie de sessão    |
-| `ADMIN_PASSWORD` | Senha do usuário `admin`                   |
-| `USER_PASSWORD`  | Senha do usuário `usuario`                 |
+## 4. Integração lixa + esteira — `codigos/04-integracao-lixa-esteira/`
 
-> As credenciais de demonstração (`admin` / `123456` e `usuario` / `textil2024`)
-> existem apenas para testes locais. Troque antes de qualquer uso real.
+Ciclo automático que desce a lixa, aciona o motor de lixa e sobe a lixa.
 
-### Endpoints principais
+| Item | Valor |
+| ---- | ----- |
+| Driver do motor de passo — STEP | GPIO `32` |
+| Driver do motor de passo — DIR | GPIO `33` |
+| Relé da lixa | GPIO `25` (ativo em LOW) |
+| Tempo de descida/subida | 1500 ms |
+| Tempo de lixa ligada | 1500 ms |
 
-| Método | Rota                  | Descrição                            |
-| ------ | --------------------- | ------------------------------------ |
-| POST   | `/api/login`          | Autenticação                         |
-| POST   | `/api/cadastrar`      | Criação de conta                     |
-| POST   | `/api/analisar`       | Cálculo de sustentabilidade          |
-| GET    | `/api/historico`      | Histórico do usuário                 |
-| GET    | `/api/historico/csv`  | Exportação do histórico em CSV       |
-| POST   | `/api/esp32/dados`    | Recebimento das leituras do ESP32    |
-| GET    | `/api/esp32/status`   | Status do dispositivo                |
+## 5. Testes — `codigos/05-testes/`
 
-## 4. Modelos 3D — `freecad/`
+Sketches de bancada usados para validar cada componente isoladamente.
+
+| Sketch | Componente | Pinos |
+| ------ | ---------- | ----- |
+| `teste_led` | LED do GP2Y1010AU0F + ADC (ESP-IDF) | LED `27`, ADC1_CH6 (`34`) |
+| `teste_motor_de_passo` | Sensor de luminosidade TSL2561 (I2C) | SDA/SCL padrão |
+| `teste_motor_esteira` | Relé do motor da esteira | `25` |
+| `teste_motor_lixa` | Motor de passo da lixa | STEP `32`, DIR `33` |
+| `teste_sensor_luminosidade` | Sensor de luminosidade TSL2561 (I2C) | SDA/SCL padrão |
+| `teste_sensor_particulas` | Relé (acionamento liga/desliga) | `26` |
+
+Bibliotecas: `SparkFunTSL2561` e `Wire` (sensores de luminosidade); `teste_led`
+usa as APIs nativas do ESP-IDF (`driver/adc`, `driver/gpio`, FreeRTOS).
+
+> Observação: dois sketches têm conteúdo diferente do nome da pasta —
+> `teste_motor_de_passo` contém o código do sensor de luminosidade e
+> `teste_sensor_particulas` contém um teste de relé. Os arquivos foram mantidos
+> como estavam no diretório original.
+
+## 6. Modelos 3D — `freecad/`
 
 Arquivos `.FCStd` do FreeCAD com as peças do projeto:
 
